@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class HideInactiveObjects
 {
-    private static bool isHiddenObjects = true;
+    private static bool isHiddenObjects = false;
     private const string MenuPath = "Tools/Hide Inactive Objects";
 
     static GameObject[] GetInactiveObjects()
@@ -37,12 +37,11 @@ public class HideInactiveObjects
     {
         if (isHiddenObjects)
         {
-            Debug.Log(GetInactiveObjects().Length);
-            HideObjects(GetInactiveObjects());
+            DisplayObjects(GetInactiveObjects());            
         }
         else
         {
-            DisplayObjects(GetInactiveObjects());
+            HideObjects(GetInactiveObjects());
         }
         
         isHiddenObjects = !isHiddenObjects;
