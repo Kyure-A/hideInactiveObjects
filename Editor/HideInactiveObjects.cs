@@ -18,22 +18,18 @@ public class HideInactiveObjects
 
     static void HideObjects(GameObject[] targets)
     {
-        
         foreach (var target in targets)
         {
             target.hideFlags = HideFlags.HideInHierarchy;
         }
-        // targets.Select(x => (x.hideFlags = HideFlags.HideInHierarchy));
     }
 
     static void DisplayObjects(GameObject[] targets)
     {
-        
         foreach (var target in targets)
         {
             target.hideFlags = HideFlags.None;
         }
-        // targets.Select(x => (x.hideFlags = HideFlags.None));
     }
     
     [MenuItem(MenuPath)]
