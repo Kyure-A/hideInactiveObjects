@@ -46,78 +46,78 @@ namespace jp.kyre.hideInactiveObjects
 
             return children;
         }
-    
-    [MenuItem("Tools/Hide Inactive Objects/Enable")]
-    static void Toggle()
-    {
-        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
         
-        if (isHiddenObjects)
+        [MenuItem("Tools/Hide Inactive Objects/Enable")]
+        static void Toggle()
         {
-            DisplayObjects(GetInactiveObjects(enableForWholeHierarchy ? allObjects : getChildObjects(targetObjects)));            
-        }
-        else
-        {
-            HideObjects(GetInactiveObjects(enableForWholeHierarchy ? allObjects : getChildObjects(targetObjects)));
-        }
-
-        isHiddenObjects = !isHiddenObjects;
+            GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
         
-        Menu.SetChecked("Tools/Hide Inactive Objects/Enable", isHiddenObjects);
-    }
-    
-    [MenuItem("Tools/Hide Inactive Objects/Enable", true)]
-    static bool ValidateToggle()
-    {
-        Menu.SetChecked("Tools/Hide Inactive Objects/Enable", isHiddenObjects);
-        return true;
-    }
-    
-    [MenuItem("Tools/Hide Inactive Objects/Options")]
-    public static void ShowWindow()
-    {
-        GetWindow<Main>("Hide Inactive Objects");
-    }
-
-    bool showError = false;
-    
-    private void OnGUI()
-    {
-        enableForWholeHierarchy = EditorGUILayout.Toggle("Enable for whole hierarchy", enableForWholeHierarchy);
-        
-        targetObjects = targetObjects.Select((obj, i) => 
-                                             (GameObject)EditorGUILayout.ObjectField($"GameObject {i + 1}", obj, typeof(GameObject), true)).ToList();
-        
-        GUILayout.BeginHorizontal();
-        
-        if (GUILayout.Button("+"))
-        {
-            targetObjects.Add(null);
-        }
-
-        if (GUILayout.Button("-"))
-        {
-            targetObjects.RemoveAt(targetObjects.Count - 1);
-        }
-
-        GUILayout.EndHorizontal();
-
-        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
-        
-        if (GUILayout.Button(isHiddenObjects ? "Hide" : "Display"))
-        {
-            Debug.Log($"targetObjects.Count: {targetObjects.Count()}");
-            
-            if (targetObjects.Count() == 0 && !enableForWholeHierarchy) showError = true;
-            
-            else {
-                Toggle();
-                showError = false;
+            if (isHiddenObjects)
+            {
+                DisplayObjects(GetInactiveObjects(enableForWholeHierarchy ? allObjects : getChildObjects(targetObjects)));            
             }
+            else
+            {
+                HideObjects(GetInactiveObjects(enableForWholeHierarchy ? allObjects : getChildObjects(targetObjects)));
+            }
+
+            isHiddenObjects = !isHiddenObjects;
+        
+            Menu.SetChecked("Tools/Hide Inactive Objects/Enable", isHiddenObjects);
+        }
+        
+        [MenuItem("Tools/Hide Inactive Objects/Enable", true)]
+        static bool ValidateToggle()
+        {
+            Menu.SetChecked("Tools/Hide Inactive Objects/Enable", isHiddenObjects);
+            return true;
+        }
+        
+        [MenuItem("Tools/Hide Inactive Objects/Options")]
+        public static void ShowWindow()
+        {
+            GetWindow<Main>("Hide Inactive Objects");
         }
 
-        if (showError) GUILayout.Label("Error: Object を指定するか Hierarchy 全体に設定を有効化してください", new GUIStyle() {normal = new GUIStyleState() { textColor = Color.red }});
-    }
+        bool showError = false;
+    
+        private void OnGUI()
+        {
+            enableForWholeHierarchy = EditorGUILayout.Toggle("Enable for whole hierarchy", enableForWholeHierarchy);
+        
+            targetObjects = targetObjects.Select((obj, i) => 
+                                                 (GameObject)EditorGUILayout.ObjectField($"GameObject {i + 1}", obj, typeof(GameObject), true)).ToList();
+        
+            GUILayout.BeginHorizontal();
+        
+            if (GUILayout.Button("+"))
+            {
+                targetObjects.Add(null);
+            }
+
+            if (GUILayout.Button("-"))
+            {
+                targetObjects.RemoveAt(targetObjects.Count - 1);
+            }
+
+            GUILayout.EndHorizontal();
+
+            GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+        
+            if (GUILayout.Button(isHiddenObjects ? "Hide" : "Display"))
+            {
+                Debug.Log($"targetObjects.Count: {targetObjects.Count()}");
+            
+                if (targetObjects.Count() == 0 && !enableForWholeHierarchy) showError = true;
+            
+                else {
+                    Toggle();
+                    showError = false;
+                }
+            }
+
+            if (showError) GUILayout.Label("Error: Object を指定するか Hierarchy 全体に設定を有効化してください", new GUIStyle() {normal = new GUIStyleState() { textColor = Color.red }});
+        }
     }
 
 }
