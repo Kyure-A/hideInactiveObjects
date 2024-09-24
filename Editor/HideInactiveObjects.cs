@@ -1,18 +1,17 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 public class HideInactiveObjects : EditorWindow
 {
     private static bool isHiddenObjects = false;
-    private const string MenuPath = "Tools/Hide Inactive Objects";
-    private GameObject draggedObject;
+    private static bool enableForWholeHierarchy = false;
+    private static List<GameObject> targetObjects = new List<GameObject>();
     
-    static GameObject[] GetInactiveObjects()
+    static GameObject[] GetInactiveObjects(GameObject[] allObjects)
     {
-        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
-
         GameObject[] inactiveObjects = Array.FindAll(allObjects, x => (!x.activeInHierarchy && !x.activeSelf));
         return inactiveObjects;
     }
@@ -23,6 +22,8 @@ public class HideInactiveObjects : EditorWindow
         {
             target.hideFlags = HideFlags.HideInHierarchy;
         }
+
+        isHiddenObjects = true;
     }
 
     static void DisplayObjects(GameObject[] targets)
@@ -31,42 +32,69 @@ public class HideInactiveObjects : EditorWindow
         {
             target.hideFlags = HideFlags.None;
         }
+
+        isHiddenObjects = false;
     }
     
-    [MenuItem(MenuPath + "/Enable")]
+    [MenuItem("Tools/Hide Inactive Objects/Enable")]
     static void ToggleOption()
     {
+        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+        
         if (isHiddenObjects)
         {
-            DisplayObjects(GetInactiveObjects());            
+            DisplayObjects(GetInactiveObjects(enableForWholeHierarchy ? allObjects : targetObjects.ToArray()));            
         }
         else
         {
-            HideObjects(GetInactiveObjects());
+            HideObjects(GetInactiveObjects(enableForWholeHierarchy ? allObjects : targetObjects.ToArray()));
         }
-        
-        isHiddenObjects = !isHiddenObjects;
-        Menu.SetChecked(MenuPath + "/Enable", isHiddenObjects);
+
+        Menu.SetChecked("Tools/Hide Inactive Objects/Enable", isHiddenObjects);
     }
     
-    [MenuItem(MenuPath + "/Enable", true)]
+    [MenuItem("Tools/Hide Inactive Objects/Enable", true)]
     static bool ValidateOption()
     {
-        Menu.SetChecked(MenuPath + "/Enable", isHiddenObjects);
+        Menu.SetChecked("Tools/Hide Inactive Objects/Enable", isHiddenObjects);
         return true;
     }
-
-    [MenuItem(MenuPath + "/Options")]
+    
+    [MenuItem("Tools/Hide Inactive Objects/Options")]
     public static void ShowWindow()
     {
         GetWindow<HideInactiveObjects>("Hide Inactive Objects");
     }
-
+    
     private void OnGUI()
-    {   
-        draggedObject = (GameObject)EditorGUILayout.ObjectField("Drag GameObject Here", draggedObject, typeof(GameObject), true);
+    {
+        enableForWholeHierarchy = EditorGUILayout.Toggle("Enable for whole hierarchy", enableForWholeHierarchy);
+        
+        targetObjects = targetObjects.Select((obj, i) => 
+                                             (GameObject)EditorGUILayout.ObjectField($"GameObject {i + 1}", obj, typeof(GameObject), true)).ToList();
+        
+        GUILayout.BeginHorizontal();
+        
+        if (GUILayout.Button("+"))
+        {
+            targetObjects.Add(null);
+        }
 
-        if (draggedObject != null)
+        if (GUILayout.Button("-"))
+        {
+            targetObjects.RemoveAt(targetObjects.Count - 1);
+        }
+
+        GUILayout.EndHorizontal();
+
+        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+        
+        if (GUILayout.Button(isHiddenObjects ? "Hide" : "Display"))
+        {
+            ToggleOption();
+        }
+        
+        if (targetObjects != null)
         {
             
         }
