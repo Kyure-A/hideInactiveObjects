@@ -22,8 +22,6 @@ public class HideInactiveObjects : EditorWindow
         {
             target.hideFlags = HideFlags.HideInHierarchy;
         }
-
-        isHiddenObjects = true;
     }
 
     static void DisplayObjects(GameObject[] targets)
@@ -32,29 +30,42 @@ public class HideInactiveObjects : EditorWindow
         {
             target.hideFlags = HideFlags.None;
         }
+    }
 
-        isHiddenObjects = false;
+    static GameObject[] getChildObjects(List<GameObject> targetObjects)
+    {
+        // 長過ぎ
+        GameObject[] children = targetObjects
+            .Select(targetObject =>
+                    targetObject.transform.Cast<Transform>()
+                    .Select(x => x.gameObject).ToArray()
+            )
+            .SelectMany(x => x).ToArray();
+
+        return children;
     }
     
     [MenuItem("Tools/Hide Inactive Objects/Enable")]
-    static void ToggleOption()
+    static void Toggle()
     {
         GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
         
         if (isHiddenObjects)
         {
-            DisplayObjects(GetInactiveObjects(enableForWholeHierarchy ? allObjects : targetObjects.ToArray()));            
+            DisplayObjects(GetInactiveObjects(enableForWholeHierarchy ? allObjects : getChildObjects(targetObjects)));            
         }
         else
         {
-            HideObjects(GetInactiveObjects(enableForWholeHierarchy ? allObjects : targetObjects.ToArray()));
+            HideObjects(GetInactiveObjects(enableForWholeHierarchy ? allObjects : getChildObjects(targetObjects)));
         }
 
+        isHiddenObjects = !isHiddenObjects;
+        
         Menu.SetChecked("Tools/Hide Inactive Objects/Enable", isHiddenObjects);
     }
     
     [MenuItem("Tools/Hide Inactive Objects/Enable", true)]
-    static bool ValidateOption()
+    static bool ValidateToggle()
     {
         Menu.SetChecked("Tools/Hide Inactive Objects/Enable", isHiddenObjects);
         return true;
