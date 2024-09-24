@@ -7,12 +7,12 @@ using UnityEngine;
 public class HideInactiveObjects : EditorWindow
 {
     private static bool isHiddenObjects = false;
-    private static bool enableForWholeHierarchy = false;
+    private static bool enableForWholeHierarchy = true;
     private static List<GameObject> targetObjects = new List<GameObject>();
     
     static GameObject[] GetInactiveObjects(GameObject[] allObjects)
     {
-        GameObject[] inactiveObjects = Array.FindAll(allObjects, x => (!x.activeInHierarchy && !x.activeSelf));
+        GameObject[] inactiveObjects = Array.FindAll(allObjects, x => (!x.activeInHierarchy && !x.activeSelf && x.name != "InternalIdentityTransform"));
         return inactiveObjects;
     }
 
