@@ -4,46 +4,48 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class HideInactiveObjects : EditorWindow
+namespace jp.kyre.hideInactiveObjects
 {
-    private static bool isHiddenObjects = false;
-    private static bool enableForWholeHierarchy = true;
-    private static List<GameObject> targetObjects = new List<GameObject>();
+    public class Main : EditorWindow
+    {
+        private static bool isHiddenObjects = false;
+        private static bool enableForWholeHierarchy = true;
+        private static List<GameObject> targetObjects = new List<GameObject>();
     
-    static GameObject[] GetInactiveObjects(GameObject[] allObjects)
-    {
-        GameObject[] inactiveObjects = Array.FindAll(allObjects, x => (!x.activeInHierarchy && !x.activeSelf && x.name != "InternalIdentityTransform"));
-        return inactiveObjects;
-    }
-
-    static void HideObjects(GameObject[] targets)
-    {
-        foreach (var target in targets)
+        static GameObject[] GetInactiveObjects(GameObject[] allObjects)
         {
-            target.hideFlags = HideFlags.HideInHierarchy;
+            GameObject[] inactiveObjects = Array.FindAll(allObjects, x => (!x.activeInHierarchy && !x.activeSelf && x.name != "InternalIdentityTransform"));
+            return inactiveObjects;
         }
-    }
 
-    static void DisplayObjects(GameObject[] targets)
-    {
-        foreach (var target in targets)
+        static void HideObjects(GameObject[] targets)
         {
-            target.hideFlags = HideFlags.None;
+            foreach (var target in targets)
+            {
+                target.hideFlags = HideFlags.HideInHierarchy;
+            }
         }
-    }
 
-    static GameObject[] getChildObjects(List<GameObject> targetObjects)
-    {
-        // 長過ぎ
-        GameObject[] children = targetObjects
-            .Select(targetObject =>
-                    targetObject.transform.Cast<Transform>()
-                    .Select(x => x.gameObject).ToArray()
-            )
-            .SelectMany(x => x).ToArray();
+        static void DisplayObjects(GameObject[] targets)
+        {
+            foreach (var target in targets)
+            {
+                target.hideFlags = HideFlags.None;
+            }
+        }
 
-        return children;
-    }
+        static GameObject[] getChildObjects(List<GameObject> targetObjects)
+        {
+            // 長過ぎ
+            GameObject[] children = targetObjects
+                .Select(targetObject =>
+                        targetObject.transform.Cast<Transform>()
+                        .Select(x => x.gameObject).ToArray()
+                )
+                .SelectMany(x => x).ToArray();
+
+            return children;
+        }
     
     [MenuItem("Tools/Hide Inactive Objects/Enable")]
     static void Toggle()
@@ -74,7 +76,7 @@ public class HideInactiveObjects : EditorWindow
     [MenuItem("Tools/Hide Inactive Objects/Options")]
     public static void ShowWindow()
     {
-        GetWindow<HideInactiveObjects>("Hide Inactive Objects");
+        GetWindow<Main>("Hide Inactive Objects");
     }
 
     bool showError = false;
@@ -116,4 +118,6 @@ public class HideInactiveObjects : EditorWindow
 
         if (showError) GUILayout.Label("Error: Object を指定するか Hierarchy 全体に設定を有効化してください", new GUIStyle() {normal = new GUIStyleState() { textColor = Color.red }});
     }
+    }
+
 }
