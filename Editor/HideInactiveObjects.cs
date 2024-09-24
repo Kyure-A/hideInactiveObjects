@@ -3,11 +3,12 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-public class HideInactiveObjects
+public class HideInactiveObjects : EditorWindow
 {
     private static bool isHiddenObjects = false;
     private const string MenuPath = "Tools/Hide Inactive Objects";
-
+    private GameObject draggedObject;
+    
     static GameObject[] GetInactiveObjects()
     {
         GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
@@ -32,7 +33,7 @@ public class HideInactiveObjects
         }
     }
     
-    [MenuItem(MenuPath)]
+    [MenuItem(MenuPath + "/Enable")]
     static void ToggleOption()
     {
         if (isHiddenObjects)
@@ -45,13 +46,29 @@ public class HideInactiveObjects
         }
         
         isHiddenObjects = !isHiddenObjects;
-        Menu.SetChecked(MenuPath, isHiddenObjects);
+        Menu.SetChecked(MenuPath + "/Enable", isHiddenObjects);
     }
     
-    [MenuItem(MenuPath, true)]
+    [MenuItem(MenuPath + "/Enable", true)]
     static bool ValidateOption()
     {
-        Menu.SetChecked(MenuPath, isHiddenObjects);
+        Menu.SetChecked(MenuPath + "/Enable", isHiddenObjects);
         return true;
+    }
+
+    [MenuItem(MenuPath + "/Options")]
+    public static void ShowWindow()
+    {
+        GetWindow<HideInactiveObjects>("Hide Inactive Objects");
+    }
+
+    private void OnGUI()
+    {   
+        draggedObject = (GameObject)EditorGUILayout.ObjectField("Drag GameObject Here", draggedObject, typeof(GameObject), true);
+
+        if (draggedObject != null)
+        {
+            
+        }
     }
 }
