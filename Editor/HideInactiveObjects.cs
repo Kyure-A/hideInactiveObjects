@@ -65,6 +65,8 @@ public class HideInactiveObjects : EditorWindow
     {
         GetWindow<HideInactiveObjects>("Hide Inactive Objects");
     }
+
+    bool showError = false;
     
     private void OnGUI()
     {
@@ -91,12 +93,16 @@ public class HideInactiveObjects : EditorWindow
         
         if (GUILayout.Button(isHiddenObjects ? "Hide" : "Display"))
         {
-            ToggleOption();
-        }
-        
-        if (targetObjects != null)
-        {
+            Debug.Log($"targetObjects.Count: {targetObjects.Count()}");
             
+            if (targetObjects.Count() == 0 && !enableForWholeHierarchy) showError = true;
+            
+            else {
+                Toggle();
+                showError = false;
+            }
         }
+
+        if (showError) GUILayout.Label("Error: Object を指定するか Hierarchy 全体に設定を有効化してください", new GUIStyle() {normal = new GUIStyleState() { textColor = Color.red }});
     }
 }
