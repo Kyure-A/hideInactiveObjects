@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace jp.kyre.hideInactiveObjects
+namespace moe.kyre.hideInactiveObjects
 {
     public class Main : EditorWindow
     {
