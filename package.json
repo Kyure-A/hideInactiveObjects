@@ -1,6 +1,6 @@
 {
     "name": "moe.kyre.hideInactiveObjects",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "displayName": "HideInactiveObjects",
     "description": "Unity Editor extensions to hide inactive objects on hierarchy.",
     "unity": "2022.3",
